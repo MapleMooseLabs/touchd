@@ -4,6 +4,9 @@
   "description": "Small JS Library for handling touch events",
   "main": "./dist/touchd.js",
   "scripts": {
+    "compile": "babel ./src --out-dir ./dist",
+    "lint": "eslint src",
+    "watch": "watch 'npm run lint && npm run compile' src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -14,5 +17,15 @@
     "gestures"
   ],
   "author": "Mark Rabey <mark@opentrace.ca> (http://opentrace.ca)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-eslint": "^7.0.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-uglify": "^1.0.2",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "eslint": "^3.6.1",
+    "watch": "^0.19.2"
+  }
 }
