@@ -1,0 +1,18 @@
+{
+  "name": "touchd",
+  "version": "0.1.0",
+  "description": "Small JS Library for handling touch events",
+  "main": "./dist/touchd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript",
+    "touch",
+    "swipe",
+    "tap",
+    "gestures"
+  ],
+  "author": "Mark Rabey <mark@opentrace.ca> (http://opentrace.ca)",
+  "license": "MIT"
+}
