@@ -13,6 +13,10 @@
     "start": "npm run watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Opentrace/touchd.git"
+  },
   "keywords": [
     "javascript",
     "touch",
