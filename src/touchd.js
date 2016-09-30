@@ -8,17 +8,27 @@ const CustomEvent = (name, props) => {
 CustomEvent.prototype = window.CustomEvent.prototype;
 window.CustomEvent = CustomEvent;
 
+const DEFAULT_OPTIONS = {
+  swipeThreshold: 200,
+  swipeTimeout: 500,
+  panThreshold: 10,
+};
+
 class Touchd {
 
-  constructor(el) {
-    this.threshold = 200;
+  constructor(el, options={}) {
+    this.swipeThreshold = options.swipeThreshold ? options.swipeThreshold : DEFAULT_OPTIONS.swipeThreshold;
+    this.swipeTimeout = options.swipeTimeout ? options.swipeTimeout : DEFAULT_OPTIONS.swipeTimeout;
+    this.panThreshold = options.panThreshold ? options.panThreshold : DEFAULT_OPTIONS.panThreshold;
     this.el = (typeof el === 'object' ? el : document.getElementById(el));
     this.gestures = {
+      pan: null,
       swipe: null,
       tap: null
     };
 
     this.prevents = {
+      pan: false,
       swipe: false,
       tap: false
     };
@@ -28,15 +38,44 @@ class Touchd {
 
   resetTouches() {
     this.touches = {
-      touchstart: { x: -1, y: -1 },
-      touchmove: { x: -1, y: -1 },
+      touchstart: { x: -1, y: -1, t: 0 },
+      touchmove: { x: -1, y: -1, t: 0 },
       touchend: false,
       direction: null
     };
   }
 
+  delta() {
+    return {
+      x: this.touches.touchstart.x - this.touches.touchmove.x,
+      y: this.touches.touchstart.y - this.touches.touchmove.y
+    };
+  }
+
+  direction() {
+    const touches = this.touches;
+    const delta = this.delta();
+    let direction;
+
+    if (Math.abs(delta.x) > Math.abs(delta.y)) { // right or left
+      direction = (this.touches.touchstart.x < this.touches.touchmove.x ? 'right' : 'left');
+    } else { // up or down
+      direction = (this.touches.touchstart.y < this.touches.touchmove.y ? 'down' : 'up');
+    }
+    return direction;
+  }
+
+  pan() {
+    const e = new CustomEvent('pan', { bubbles: false, cancelable: false, detail: { direction: this.direction(), delta: this.delta() }});
+    e.initialTarget = this.target;
+    this.el.dispatchEvent(e);
+    if ('function' === typeof this.gestures.pan) {
+      this.gestures.pan(e);
+    }
+  }
+
   swipe() {
-    const e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: { direction: this.touches.direction }});
+    const e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: { direction: this.direction(), delta: this.delta() }});
     e.initialTarget = this.target;
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.swipe) {
@@ -46,7 +85,7 @@ class Touchd {
   }
 
   tap() {
-    const e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: { direction: this.touches.direction }});
+    const e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: undefined });
     e.initialTarget = this.target;
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.tap) {
@@ -57,7 +96,7 @@ class Touchd {
 
   handleTouch(event) {
     let touch;
-
+    const delta = this.delta();
     if (typeof event !== undefined) {
       if (typeof event.touches !== undefined) {
         touch = event.touches[0];
@@ -65,26 +104,23 @@ class Touchd {
         if (event.type === 'touchstart' || event.type === 'touchmove') {
           this.touches[event.type].x = touch.pageX;
           this.touches[event.type].y = touch.pageY;
+          this.touches[event.type].t = event.timeStamp;
+          // console.log(this.panThreshold);
+          if (event.type === 'touchmove' && (Math.abs(delta.x) >= this.panThreshold || Math.abs(delta.y) >= this.panThreshold)) {
+            this.pan();
+          }
         } else if (event.type === 'touchend') {
-
+          const timeToSwipe = event.timeStamp - this.touches.touchstart.t;
           this.touches[event.type] = true;
 
-          if (this.touches.touchstart.x > -1 && this.touches.touchmove.x > -1) { // if there was any movement
-            const deltaX = this.touches.touchstart.x - this.touches.touchmove.x;
-            const deltaY = this.touches.touchstart.y - this.touches.touchmove.y;
+          if (timeToSwipe <= this.swipeTimeout && ((this.touches.touchstart.x > -1 && this.touches.touchmove.x > -1) || (this.touches.touchstart.y > -1 && this.touches.touchmove.y > -1))) { // if there was any movement
             // check for swipe
-            if (Math.abs(deltaX) >= this.threshold || Math.abs(deltaY) >= this.threshold) {
+            if (Math.abs(delta.x) >= this.swipeThreshold || Math.abs(delta.y) >= this.swipeThreshold) {
               if (this.prevents.swipe) {
                 event.preventDefault();
                 event.stopPropagation();
                 event.stopImmediatePropagation();
               }
-              if (Math.abs(deltaX) > Math.abs(deltaY)) { // left or right
-                this.touches.direction = (this.touches.touchstart.x < this.touches.touchmove.x ? 'right' : 'left');
-              } else { // up or down
-                this.touches.direction = (this.touches.touchstart.y < this.touches.touchmove.y ? 'up' : 'down');
-              }
-
               this.swipe();
             }
           } else {
@@ -95,7 +131,6 @@ class Touchd {
             }
             this.tap();
           }
-
         }
       }
     }
@@ -113,11 +148,11 @@ class Touchd {
     this.prevents[event] = prevent || false;
   }
 
-  threshold(value) {
+  swipeThreshold(value) {
     if (value) {
-      this.threshold = value;
+      this.swipeThreshold = value;
     }
-    return this.threshold;
+    return this.swipeThreshold;
   }
 }
 
