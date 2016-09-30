@@ -59,3 +59,6 @@ More to come.
 
 - better handling for `pan` - needs to handle switching directions
 - available by default, rather than using `element = new Touchd(...)`
+- update documentation
+  - values returned in Events
+  - more examples

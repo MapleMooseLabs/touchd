@@ -88,8 +88,13 @@ var Touchd = function () {
   }, {
     key: 'pan',
     value: function pan() {
-      var e = new CustomEvent('pan', { bubbles: false, cancelable: false, detail: { direction: this.direction(), delta: this.delta() } });
-      e.initialTarget = this.target;
+      var detail = {
+        direction: this.direction(),
+        delta: this.delta(),
+        initialTarget: this.target
+      };
+      var e = new CustomEvent('pan', { bubbles: false, cancelable: false, detail: detail });
+
       this.el.dispatchEvent(e);
       if ('function' === typeof this.gestures.pan) {
         this.gestures.pan(e);
@@ -98,8 +103,13 @@ var Touchd = function () {
   }, {
     key: 'swipe',
     value: function swipe() {
-      var e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: { direction: this.direction(), delta: this.delta() } });
-      e.initialTarget = this.target;
+      var detail = {
+        direction: this.direction(),
+        delta: this.delta(),
+        initialTarget: this.target
+      };
+      var e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: detail });
+
       this.el.dispatchEvent(e);
       if ('function' === typeof this.gestures.swipe) {
         this.gestures.swipe(e);
@@ -109,8 +119,11 @@ var Touchd = function () {
   }, {
     key: 'tap',
     value: function tap() {
-      var e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: undefined });
-      e.initialTarget = this.target;
+      var detail = {
+        initialTarget: this.target
+      };
+      var e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: detail });
+
       this.el.dispatchEvent(e);
       if ('function' === typeof this.gestures.tap) {
         this.gestures.tap(e);

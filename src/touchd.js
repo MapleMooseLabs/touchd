@@ -66,8 +66,13 @@ class Touchd {
   }
 
   pan() {
-    const e = new CustomEvent('pan', { bubbles: false, cancelable: false, detail: { direction: this.direction(), delta: this.delta() }});
-    e.initialTarget = this.target;
+    const detail = {
+      direction: this.direction(),
+      delta: this.delta(),
+      initialTarget: this.target
+    };
+    const e = new CustomEvent('pan', { bubbles: false, cancelable: false, detail: detail });
+
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.pan) {
       this.gestures.pan(e);
@@ -75,8 +80,13 @@ class Touchd {
   }
 
   swipe() {
-    const e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: { direction: this.direction(), delta: this.delta() }});
-    e.initialTarget = this.target;
+    const detail = {
+      direction: this.direction(),
+      delta: this.delta(),
+      initialTarget: this.target
+    };
+    const e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: detail });
+
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.swipe) {
       this.gestures.swipe(e);
@@ -85,8 +95,11 @@ class Touchd {
   }
 
   tap() {
-    const e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: undefined });
-    e.initialTarget = this.target;
+    const detail = {
+      initialTarget: this.target
+    };
+    const e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: detail });
+
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.tap) {
       this.gestures.tap(e);
