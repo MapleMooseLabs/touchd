@@ -93,7 +93,7 @@ var Touchd = function () {
         delta: this.delta(),
         initialTarget: this.target
       };
-      var e = new CustomEvent('pan', { bubbles: false, cancelable: false, detail: detail });
+      var e = new CustomEvent('pan', { bubbles: false, cancelable: true, detail: detail });
 
       this.el.dispatchEvent(e);
       if ('function' === typeof this.gestures.pan) {
@@ -108,7 +108,7 @@ var Touchd = function () {
         delta: this.delta(),
         initialTarget: this.target
       };
-      var e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: detail });
+      var e = new CustomEvent('swipe', { bubbles: false, cancelable: true, detail: detail });
 
       this.el.dispatchEvent(e);
       if ('function' === typeof this.gestures.swipe) {
@@ -122,7 +122,7 @@ var Touchd = function () {
       var detail = {
         initialTarget: this.target
       };
-      var e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: detail });
+      var e = new CustomEvent('tap', { bubbles: false, cancelable: true, detail: detail });
 
       this.el.dispatchEvent(e);
       if ('function' === typeof this.gestures.tap) {
@@ -145,6 +145,11 @@ var Touchd = function () {
             this.touches[event.type].t = event.timeStamp;
             // console.log(this.panThreshold);
             if (event.type === 'touchmove' && (Math.abs(delta.x) >= this.panThreshold || Math.abs(delta.y) >= this.panThreshold)) {
+              if (this.prevents.pan) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+              }
               this.pan();
             }
           } else if (event.type === 'touchend') {

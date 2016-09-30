@@ -71,7 +71,7 @@ class Touchd {
       delta: this.delta(),
       initialTarget: this.target
     };
-    const e = new CustomEvent('pan', { bubbles: false, cancelable: false, detail: detail });
+    const e = new CustomEvent('pan', { bubbles: false, cancelable: true, detail: detail });
 
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.pan) {
@@ -85,7 +85,7 @@ class Touchd {
       delta: this.delta(),
       initialTarget: this.target
     };
-    const e = new CustomEvent('swipe', { bubbles: false, cancelable: false, detail: detail });
+    const e = new CustomEvent('swipe', { bubbles: false, cancelable: true, detail: detail });
 
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.swipe) {
@@ -98,7 +98,7 @@ class Touchd {
     const detail = {
       initialTarget: this.target
     };
-    const e = new CustomEvent('tap', { bubbles: false, cancelable: false, detail: detail });
+    const e = new CustomEvent('tap', { bubbles: false, cancelable: true, detail: detail });
 
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.tap) {
@@ -120,6 +120,11 @@ class Touchd {
           this.touches[event.type].t = event.timeStamp;
           // console.log(this.panThreshold);
           if (event.type === 'touchmove' && (Math.abs(delta.x) >= this.panThreshold || Math.abs(delta.y) >= this.panThreshold)) {
+            if (this.prevents.pan) {
+              event.preventDefault();
+              event.stopPropagation();
+              event.stopImmediatePropagation();
+            }
             this.pan();
           }
         } else if (event.type === 'touchend') {
