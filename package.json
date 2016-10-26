@@ -1,6 +1,6 @@
 {
   "name": "touchd",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Small JS Library for handling touch events",
   "main": "./dist/touchd.js",
   "scripts": {

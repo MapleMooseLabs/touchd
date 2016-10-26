@@ -90,8 +90,8 @@ class Touchd {
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.swipe) {
       this.gestures.swipe(e);
-      this.resetTouches();
     }
+    this.resetTouches();
   }
 
   tap() {
@@ -103,8 +103,8 @@ class Touchd {
     this.el.dispatchEvent(e);
     if ('function' === typeof this.gestures.tap) {
       this.gestures.tap(e);
-      this.resetTouches();
     }
+    this.resetTouches();
   }
 
   handleTouch(event) {
@@ -118,7 +118,7 @@ class Touchd {
           this.touches[event.type].x = touch.pageX;
           this.touches[event.type].y = touch.pageY;
           this.touches[event.type].t = event.timeStamp;
-          // console.log(this.panThreshold);
+          
           if (event.type === 'touchmove' && (Math.abs(delta.x) >= this.panThreshold || Math.abs(delta.y) >= this.panThreshold)) {
             if (this.prevents.pan) {
               event.preventDefault();
